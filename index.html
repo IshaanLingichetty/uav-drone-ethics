@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drone Ethics · UAVs@Berkeley</title>
+<style>
+/* One self-contained file. No fonts, scripts or images load from the internet. */
+:root{
+  --bg:#f8f9fb; --card:#ffffff; --soft:#eef0f4; --soft-2:#e3e6ec;
+  --ink:#0f1115; --ink-2:#4f5561; --ink-3:#8a909b;
+  --line:rgba(15,17,21,.08); --line-2:rgba(15,17,21,.14);
+  --sky:#8fb8ef; --sky-ink:#0e2a4f; --blue:#003262; --gold:#fdb515; --live:#2f9e5a;
+  --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --serif: Charter, "Bitstream Charter", "Iowan Old Style", "Sitka Text", Cambria, Georgia, serif;
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* top nav */
+.top{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;height:60px;padding:0 24px;display:flex;align-items:center;gap:16px}
+.logo{font:600 15px var(--sans);white-space:nowrap}
+.pills{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:0 auto}
+.pill{border:0;background:transparent;height:34px;padding:0 14px;border-radius:17px;font-size:14px;color:var(--ink-2);cursor:pointer;white-space:nowrap;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.pill:hover{background:var(--soft);color:var(--ink)}
+.pill[aria-current="true"]{background:var(--ink);color:#fff}
+.pill .ck{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--live);margin-left:6px;vertical-align:middle;opacity:0;transition:opacity .2s}
+.pill .ck.on{opacity:1}
+.round{width:36px;height:36px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-content:center;cursor:pointer;flex:none}
+.round svg{width:16px;height:16px}
+
+main{max-width:1120px;margin:0 auto;padding:0 24px 160px}
+section{display:none} section.on{display:block;animation:in .3s var(--ease)}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){section.on{animation:none}*{transition:none!important;animation:none!important}}
+
+/* sky hero, echoing the club site */
+.sky{margin:24px 0 0;border-radius:28px;background:var(--sky);color:var(--sky-ink);display:grid;grid-template-columns:1.05fr 1fr;align-items:center;overflow:hidden;min-height:440px}
+.sky .txt{padding:56px}
+.sky .kick{font:500 14px var(--sans);opacity:.75}
+h1{font:600 clamp(36px,4.2vw,52px)/1.03 var(--sans);letter-spacing:-.035em;margin:12px 0 20px}
+.boxed{position:relative;display:inline-block;padding:0 .08em}
+.boxed::before{content:"";position:absolute;inset:.06em -.04em .02em;border:1.5px solid var(--sky-ink)}
+.boxed b{position:absolute;width:8px;height:8px;background:#fff;border:1.5px solid var(--sky-ink)}
+.boxed b:nth-child(1){left:-.04em;top:.06em;transform:translate(-50%,-50%)}
+.boxed b:nth-child(2){right:-.04em;top:.06em;transform:translate(50%,-50%)}
+.boxed b:nth-child(3){left:-.04em;bottom:.02em;transform:translate(-50%,50%)}
+.boxed b:nth-child(4){right:-.04em;bottom:.02em;transform:translate(50%,50%)}
+.sky .sub{font-size:18px;max-width:440px;margin:0;opacity:.85}
+.sky .art{height:100%;display:grid;place-content:center;padding:24px}
+.sky .art svg{width:min(440px,100%);height:auto;overflow:visible}
+.rotor{transform-box:fill-box;transform-origin:center;animation:spin .12s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* section heads */
+.head{padding:64px 0 32px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;border-bottom:1px solid var(--line);margin-bottom:40px}
+.head .n{font:500 13px var(--mono);color:var(--ink-3)}
+h2{font:600 clamp(32px,4vw,48px)/1.05 var(--sans);letter-spacing:-.03em;margin:8px 0 0;max-width:720px}
+.head .time{font-size:13px;color:var(--ink-3);white-space:nowrap}
+
+/* reading */
+.read{display:grid;grid-template-columns:minmax(0,640px) minmax(0,1fr);gap:56px}
+.prose{font:400 19px/1.7 var(--serif)}
+.prose p{margin:0 0 20px}
+.prose h3{font:600 22px/1.25 var(--sans);letter-spacing:-.01em;margin:48px 0 12px}
+.prose h3:first-child{margin-top:0}
+.prose ul{padding-left:20px;margin:0 0 20px}
+.prose li{margin:6px 0}
+.mark{background:linear-gradient(transparent 60%,rgba(253,181,21,.38) 60%)}
+.side{position:sticky;top:96px;align-self:start;display:grid;gap:12px}
+.aside{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;font-size:15px;color:var(--ink-2)}
+.aside .k{font:600 14px var(--sans);color:var(--ink);margin-bottom:8px}
+.aside p{margin:0}
+.wide{margin:48px 0}
+
+/* setup */
+.setup{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.box{background:var(--card);border-radius:24px;padding:28px}
+.box h3{margin:0 0 4px;font:600 20px var(--sans);letter-spacing:-.01em}
+.box p{margin:0 0 16px;color:var(--ink-2);font-size:15px}
+.namefield{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:14px;padding:6px 6px 6px 16px}
+.namefield input{flex:1;border:0;background:transparent;font:inherit;padding:10px 4px;min-width:0}
+.namefield input:focus{outline:none}
+.namefield:focus-within{box-shadow:0 0 0 1.5px var(--ink)}
+.goals{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:g}
+.goals li{display:grid;grid-template-columns:28px 1fr;font-size:15px;color:var(--ink-2)}
+.goals li::before{counter-increment:g;content:"0" counter(g);font:500 12px/1.9 var(--mono);color:var(--ink-3)}
+
+/* missions */
+.cardgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile{border:0;text-align:left;cursor:pointer;background:var(--card);border-radius:20px;padding:8px;transition:box-shadow .15s var(--ease),transform .1s var(--ease)}
+.tile:hover{box-shadow:0 8px 24px -14px rgba(0,0,0,.25)}
+.tile:active{transform:scale(.985)}
+.tile .art{height:112px;border-radius:14px;background:var(--soft);display:grid;place-content:center;color:var(--ink-3);transition:background-color .2s,color .2s}
+.tile .art svg{width:40px;height:40px}
+.tile .meta{padding:12px 8px 6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tile .t{font:600 15px var(--sans)}
+.tile .c{font-size:13px;color:var(--ink-3)}
+.tile[aria-pressed="true"] .art{background:var(--sky);color:var(--sky-ink)}
+.detail{margin-top:12px;background:var(--card);border-radius:20px;display:grid;grid-template-columns:1fr 1fr 220px;overflow:hidden}
+.detail > div{padding:24px}
+.detail > div + div{border-left:1px solid var(--line)}
+.detail h4{margin:0 0 10px;font:600 13px var(--sans);color:var(--ink-3)}
+.detail ul{margin:0;padding-left:18px;font:400 16px/1.55 var(--serif)}
+.detail li{margin:4px 0}
+.harm{display:flex;flex-direction:column;justify-content:space-between}
+.harm .big{font:600 56px/1 var(--sans);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.harm .big small{font-size:20px;color:var(--ink-3);letter-spacing:0}
+.harm .dots{display:flex;gap:4px;margin-top:12px}
+.harm .dots i{flex:1;height:6px;border-radius:3px;background:var(--soft-2);transition:background-color .2s}
+.harm .dots i.f{background:var(--ink)}
+
+/* club */
+.club{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.club div{background:var(--card);border-radius:20px;padding:20px}
+.club .t{font:600 17px var(--sans);margin-bottom:6px}
+.club p{margin:0;font:400 15px/1.55 var(--serif);color:var(--ink-2)}
+
+/* drone diagram */
+.drone{display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
+.drone .stage{background:var(--soft);border-radius:20px;padding:24px;aspect-ratio:1/1}
+.drone svg{width:100%;height:100%}
+.hot{cursor:pointer}
+.hot circle{fill:#fff;stroke:var(--ink);stroke-width:1.5;transition:fill .15s}
+.hot text{font:600 12px var(--sans);fill:var(--ink);pointer-events:none}
+.hot:hover circle,.hot.on circle{fill:var(--ink)} .hot:hover text,.hot.on text{fill:var(--gold)}
+.hot:focus{outline:none} .hot:focus-visible circle{stroke:var(--blue);stroke-width:3}
+.drone .info{background:var(--card);border-radius:20px;padding:32px;display:flex;flex-direction:column}
+.drone .info .n{font:500 13px var(--mono);color:var(--ink-3)}
+.drone .info h4{font:600 28px/1.1 var(--sans);letter-spacing:-.02em;margin:12px 0 6px}
+.drone .info .tier{align-self:flex-start;font-size:13px;background:var(--soft);border-radius:12px;padding:3px 10px;margin-bottom:16px;color:var(--ink-2)}
+.drone .info p{font:400 17px/1.65 var(--serif);margin:0}
+.drone .nav{margin-top:auto;padding-top:24px;display:flex;gap:8px}
+.drone .nav button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line-2);background:transparent;cursor:pointer}
+.drone .nav button:hover{background:var(--soft)}
+
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.rung{background:var(--card);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:8px;min-height:200px}
+.rung .lv{font:500 13px var(--mono);color:var(--ink-3)}
+.rung .t{font:600 18px/1.2 var(--sans);letter-spacing:-.01em}
+.rung p{margin:0;font:400 15px/1.55 var(--serif);color:var(--ink-2)}
+.rung .bar{margin-top:auto;height:4px;border-radius:2px;background:var(--soft)}
+.rung .bar i{display:block;height:100%;border-radius:2px;background:var(--ink)}
+
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:12px 16px;font-size:15px;cursor:pointer}
+.check input{appearance:none;flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line-2);display:grid;place-content:center;cursor:pointer;margin:0;transition:background-color .15s}
+.check input:checked{background:var(--ink);border-color:var(--ink)}
+.check input:checked::after{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+
+/* kaplan */
+.trip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.trip div{background:var(--card);border-radius:20px;padding:24px}
+.trip .s{font:400 40px/1 var(--serif);color:var(--blue)}
+.trip .q{font:600 20px/1.2 var(--sans);letter-spacing:-.01em;margin:16px 0 4px}
+.trip .d{font-size:14px;color:var(--ink-3)}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:12px}
+.vs .c{background:var(--card);border-radius:20px;padding:24px}
+.vs .eq{font:600 40px/1 var(--sans);letter-spacing:-.03em;margin:8px 0;font-variant-numeric:tabular-nums}
+.vs .mid{display:grid;place-content:center;font:600 14px var(--sans);color:var(--ink-3)}
+.vs p{margin:0;font:400 16px/1.55 var(--serif);color:var(--ink-2)}
+
+.reg{background:var(--card);border-radius:20px;padding:8px}
+.reg table{width:100%;border-collapse:collapse;font-size:15px}
+.reg th{font:500 12px var(--sans);color:var(--ink-3);text-align:left;padding:12px 10px 8px}
+.reg td{padding:4px;border-top:1px solid var(--line)}
+.reg input,.reg select{width:100%;font:inherit;border:1px solid transparent;background:transparent;border-radius:10px;padding:10px;color:var(--ink)}
+.reg input:hover,.reg select:hover{background:var(--bg)}
+.reg input:focus,.reg select:focus{outline:none;border-color:var(--ink);background:#fff}
+.reg .i{width:36px;text-align:center;font:500 12px var(--mono);color:var(--ink-3)}
+.reg .sc{width:64px;text-align:center;font:600 15px var(--sans);font-variant-numeric:tabular-nums}
+.reg .x{width:32px;height:32px;border:0;background:transparent;border-radius:50%;cursor:pointer;color:var(--ink-3)}
+.reg .x:hover{background:var(--soft);color:#a8423a}
+.lo{color:#2f7d4a}.md{color:#a06a12}.hi{color:#a8423a}
+.addrow{border:0;background:transparent;width:100%;padding:14px;border-top:1px solid var(--line);color:var(--ink-2);cursor:pointer;border-radius:0 0 14px 14px;font-size:14px}
+.addrow:hover{background:var(--bg);color:var(--ink)}
+.mx{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center;background:var(--card);border-radius:20px;padding:24px;margin-top:12px}
+.matrix{display:grid;grid-template-columns:20px repeat(5,52px);grid-template-rows:repeat(5,52px) 20px;gap:4px;font:500 11px var(--mono);color:var(--ink-3)}
+.matrix .ax{display:grid;place-content:center}
+.matrix .cell{border-radius:10px;display:flex;flex-wrap:wrap;gap:2px;align-content:center;justify-content:center}
+.pin{width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font:600 10px/20px var(--sans);text-align:center;animation:pop .25s var(--ease)}
+@keyframes pop{from{transform:scale(.5);opacity:0}}
+
+/* kaplan tags + worked example + quick check */
+.kt{display:inline-block;font:500 11px/1 var(--mono);color:var(--blue);background:rgba(0,50,98,.07);border-radius:6px;padding:4px 6px;vertical-align:2px;margin-left:6px;white-space:nowrap}
+.thread{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:24px 0 0}
+.thread div{background:var(--card);border-radius:16px;padding:16px 18px;font-size:15px;color:var(--ink-2)}
+.thread b{display:block;font:600 15px var(--sans);color:var(--ink);margin-bottom:2px}
+.thread .now{box-shadow:inset 0 0 0 1.5px var(--blue)}
+.worked{background:var(--card);border-radius:20px;padding:8px;overflow-x:auto}
+.worked table{width:100%;border-collapse:collapse;font:400 15px/1.5 var(--serif)}
+.worked th{font:500 12px var(--sans);color:var(--ink-3);text-align:left;padding:12px 12px 8px}
+.worked td{padding:12px;border-top:1px solid var(--line);vertical-align:top}
+.worked td.n{font:600 15px var(--sans);font-variant-numeric:tabular-nums;white-space:nowrap}
+.accept{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.accept div{background:var(--card);border-radius:16px;padding:18px}
+.accept b{display:block;font:600 16px/1.3 var(--sans);margin-bottom:4px}
+.accept span{font:400 15px/1.5 var(--serif);color:var(--ink-2)}
+.qc{display:grid;gap:8px}
+.qi{background:var(--card);border-radius:16px;padding:18px 20px}
+.qi .p{font:500 16px/1.4 var(--sans);margin-bottom:12px}
+.qi .opts{display:flex;gap:6px;flex-wrap:wrap}
+.qi button{height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line-2);background:transparent;cursor:pointer;font-size:14px;transition:background-color .15s,border-color .15s}
+.qi button:hover{background:var(--soft)}
+.qi button.right{background:#e6f2ea;border-color:#2f7d4a;color:#1f5a35}
+.qi button.wrong{background:#f8e6e4;border-color:#a8423a;color:#7c2d27}
+.qi .fb{font:400 15px/1.5 var(--serif);color:var(--ink-2);margin-top:10px;min-height:0}
+@media (max-width:900px){.thread,.accept{grid-template-columns:1fr}}
+
+/* notes */
+.notes{margin:48px 0;background:var(--soft);border-radius:24px;padding:8px}
+.notes .q{padding:20px 20px 16px;display:flex;gap:12px;align-items:flex-start}
+.notes .q .tag{flex:none;font:600 12px var(--sans);background:var(--ink);color:#fff;border-radius:12px;padding:4px 10px;margin-top:2px}
+.notes .q .text{font:600 19px/1.35 var(--sans);letter-spacing:-.01em}
+.notes .q .hint{font-size:14px;color:var(--ink-2);margin-top:4px;font-weight:400;letter-spacing:0}
+.pbox{background:var(--card);border-radius:16px;padding:16px 18px}
+.pbox:focus-within{box-shadow:0 0 0 1.5px var(--ink)}
+textarea{display:block;width:100%;border:0;resize:vertical;min-height:120px;font:400 17px/1.6 var(--serif);color:var(--ink);background:transparent;padding:0}
+textarea:focus{outline:none}
+textarea::placeholder{color:var(--ink-3)}
+
+/* ending screen */
+.end{margin-top:24px;border-radius:28px;background:var(--sky);color:var(--sky-ink);padding:64px 56px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
+.end h2{color:var(--sky-ink);margin:12px 0 16px}
+.end p{margin:0;font-size:18px;max-width:520px;opacity:.85}
+.end .seal{width:168px;height:168px;border-radius:50%;background:var(--sky-ink);color:var(--gold);display:grid;place-content:center;text-align:center;font:600 13px/1.4 var(--sans)}
+.end .seal svg{width:48px;height:48px;margin:0 auto 6px;display:block}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+.stats div{background:var(--card);border-radius:20px;padding:24px}
+.stats .v{font:600 44px/1 var(--sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:8px 0 4px}
+.stats .l{font-size:13px;color:var(--ink-3)}
+.stats .s{font:400 15px/1.5 var(--serif);color:var(--ink-2)}
+.endrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px}
+.btn{height:44px;padding:0 20px;border-radius:22px;border:0;cursor:pointer;font:500 15px var(--sans);display:inline-flex;align-items:center;gap:8px;transition:background-color .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.dark{background:var(--ink);color:#fff}.btn.dark:hover{background:#2a2c30}
+.btn.light{background:var(--card);color:var(--ink)}.btn.light:hover{background:var(--soft)}
+.small{font-size:13px;color:var(--ink-3)}
+
+/* dock */
+.dock{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);box-shadow:0 12px 32px -12px rgba(0,0,0,.25);border-radius:28px;padding:6px}
+.dock .stat{font-size:13px;color:var(--ink-2);padding:0 12px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.dock .stat::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--live)}
+.dock .sep{width:1px;height:24px;background:var(--line-2)}
+.dock button{height:40px;border-radius:20px;border:0;padding:0 16px;background:transparent;cursor:pointer;font-size:14px;white-space:nowrap}
+.dock button:hover{background:var(--soft)}
+.dock button.dark{background:var(--ink);color:#fff}
+.dock button.dark:hover{background:#2a2c30}
+.toast{position:fixed;left:50%;bottom:88px;transform:translate(-50%,8px);opacity:0;background:var(--ink);color:#fff;font-size:14px;padding:10px 16px;border-radius:20px;transition:opacity .2s,transform .2s;pointer-events:none;z-index:30}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.log{white-space:pre-wrap;font:400 14px/1.7 var(--mono);background:var(--card);border-radius:20px;padding:24px;color:var(--ink-2);max-height:420px;overflow:auto}
+.foot{margin-top:32px;font-size:13px;color:var(--ink-3)}
+
+@media (max-width:900px){
+  .sky,.end{grid-template-columns:1fr}.sky .txt{padding:32px}.end{padding:40px 28px}
+  .read,.drone,.detail,.mx,.setup{grid-template-columns:1fr}
+  .side{position:static}
+  .detail > div + div{border-left:0;border-top:1px solid var(--line)}
+  .cardgrid,.ladder,.club{grid-template-columns:1fr 1fr}
+  .trip,.checks,.stats{grid-template-columns:1fr}
+  .vs{grid-template-columns:1fr}.vs .mid{padding:4px}
+  .head{grid-template-columns:1fr}
+  .dock .stat,.dock .sep{display:none}
+  .dock{width:calc(100% - 24px);justify-content:space-between;gap:2px}
+  .dock button{padding:0 10px;font-size:13px}
+  .end .seal{width:112px;height:112px}
+}
+@media print{.top,.dock,.toast{display:none}section{display:block!important;page-break-after:always}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="top-in">
+  <div class="logo">UAVs@Berkeley</div>
+  <nav class="pills" id="pills"></nav>
+  <button class="round" id="nextTop" aria-label="Next section"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+</div></header>
+
+<main>
+
+<!-- START -->
+<section data-title="Start">
+  <div class="sky">
+    <div class="txt">
+      <div class="kick">Engineering ethics module · about 35 min</div>
+      <h1>Fly with us, and think about who's <span class="boxed"><b></b><b></b><b></b><b></b>underneath</span></h1>
+      <p class="sub">A reading with a notebook built in. Read a part, write down what you think, move on. Your notes stay on this computer.</p>
+    </div>
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 400 300">
+        <g stroke="#0e2a4f" stroke-width="5" stroke-linecap="round">
+          <line x1="200" y1="150" x2="80" y2="110"/><line x1="200" y1="150" x2="320" y2="110"/>
+          <line x1="200" y1="150" x2="60" y2="175"/><line x1="200" y1="150" x2="340" y2="175"/>
+          <line x1="200" y1="150" x2="130" y2="225"/><line x1="200" y1="150" x2="270" y2="225"/>
+        </g>
+        <g fill="#0e2a4f"><circle cx="80" cy="110" r="7"/><circle cx="320" cy="110" r="7"/><circle cx="60" cy="175" r="7"/><circle cx="340" cy="175" r="7"/><circle cx="130" cy="225" r="7"/><circle cx="270" cy="225" r="7"/></g>
+        <g fill="rgba(14,42,79,.14)">
+          <ellipse class="rotor" cx="80" cy="102" rx="38" ry="6"/><ellipse class="rotor" cx="320" cy="102" rx="38" ry="6"/>
+          <ellipse class="rotor" cx="60" cy="167" rx="38" ry="6"/><ellipse class="rotor" cx="340" cy="167" rx="38" ry="6"/>
+          <ellipse class="rotor" cx="130" cy="217" rx="38" ry="6"/><ellipse class="rotor" cx="270" cy="217" rx="38" ry="6"/>
+        </g>
+        <rect x="170" y="128" width="60" height="44" rx="10" fill="#0e2a4f"/>
+        <rect x="186" y="136" width="28" height="10" rx="3" fill="#c0392b"/>
+        <line x1="212" y1="128" x2="222" y2="104" stroke="#0e2a4f" stroke-width="3" stroke-linecap="round"/>
+        <line x1="186" y1="172" x2="178" y2="196" stroke="#0e2a4f" stroke-width="3" stroke-linecap="round"/>
+        <line x1="214" y1="172" x2="222" y2="196" stroke="#0e2a4f" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+  <div class="setup">
+    <div class="box">
+      <h3>What's your name?</h3>
+      <p>It goes at the top of your saved notes.</p>
+      <div class="namefield"><input id="name" placeholder="Your name" autocomplete="name" aria-label="Your name"><button class="btn dark" id="startBtn">Start reading</button></div>
+      <p class="small" style="margin:12px 0 0">Nothing is sent anywhere. Use “Save to file” at the bottom to keep a copy.</p>
+    </div>
+    <div class="box">
+      <h3>By the end you'll be able to</h3>
+      <ol class="goals">
+        <li><span>Write drone risks as clear scenarios: what goes wrong, and to whom</span></li>
+        <li><span>Explain whether a safeguard lowers the chance of harm, the damage, or both</span></li>
+        <li><span>Build a risk list for a club project and argue which risks are acceptable</span></li>
+      </ol>
+    </div>
+  </div>
+  <div class="notes">
+    <div class="q"><span class="tag">Warm-up</span><div class="text">Think of a drone you've built or flown. How could it hurt someone?<div class="hint">Gut answer is fine. You'll come back to this at the end.</div></div></div>
+    <div data-note="pre"></div>
+  </div>
+</section>
+
+<!-- 1 -->
+<section data-title="Uses and risks">
+  <div class="head"><div><span class="n">01 / 03</span><h2>Same airframe, very different missions</h2></div><span class="time">About 10 min</span></div><div class="thread"><div class="now"><b>s · What can go wrong?</b>Part 1: spot scenarios</div><div><b>l, x · How likely, how bad?</b>Part 2: safeguards shrink them</div><div><b>Is it acceptable?</b>Part 3: put it together</div></div>
+  <div class="read">
+    <div class="prose">
+      <p>Drones are what people call <span class="mark">dual-use</span>. The same autopilot and thermal camera that finds a lost hiker at 2am can follow someone home from work. Nobody in McLaughlin 107A decides how every drone ends up being used. But we do decide what our designs make easy, and what they make hard.</p>
+      <p>The whole module hangs on one idea from risk analyst Stanley Kaplan: before you can judge a risk, you have to say exactly <span class="mark">what can go wrong</span>. He called each of those a scenario. This part is about spotting them.</p>
+      <p>Click through the missions. Every item under “What can go wrong” is a scenario. Notice who benefits and who would get hurt. They're often not the same people.</p>
+    </div>
+    <div class="side">
+      <div class="aside"><div class="k">The responsibility gap</div><p>When something goes wrong in a system with lots of hands on it (the designer, the pilot, the code, the regulator), it's easy for everyone to assume it was someone else's job. Owning your piece of it is most of what engineering ethics asks.</p></div>
+    </div>
+  </div>
+
+  <div class="wide">
+    <div class="cardgrid" id="apps"></div>
+    <div class="detail" id="appDetail" aria-live="polite"></div>
+  </div>
+
+  <div class="prose" style="max-width:640px"><h3>This isn't abstract for us</h3><p>Each of the club's four areas has its own typical scenarios.</p></div>
+  <div class="club" style="margin-top:16px">
+    <div><div class="t">Competition</div><p>Autonomy under time pressure. What does the aircraft do when the code meets something it wasn't tested on?</p></div>
+    <div><div class="t">Research</div><p>Projects like Midair Hotswap, swapping batteries in flight from a mothership. New ideas mean new ways to fail.</p></div>
+    <div><div class="t">Videography</div><p>Great shots, and also other people's faces, yards and windows. Privacy lives here.</p></div>
+    <div><div class="t">Outreach</div><p>How the public sees drones depends a lot on how clubs like ours fly them.</p></div>
+  </div>
+
+  <div class="read" style="margin-top:48px">
+    <div class="prose">
+      <h3>Privacy is the harm you don't see</h3>
+      <p>Not every scenario is a crash. A camera makes watching people cheap, and the people filmed usually never find out. “Footage of a neighbor's yard ends up online” is a scenario too, and it belongs on the list.</p>
+      <h3>Legal is the bare minimum</h3>
+      <p>The FAA's rules (Part 107 for commercial flying, a separate set for hobbyists) cover line of sight, altitude and flying over people. Follow them, but don't stop there. A flight can be legal and still put someone at risk who never agreed to it.</p>
+    </div>
+
+  </div>
+
+  <div class="notes">
+    <div class="q"><span class="tag">Your take</span><div class="text">Pick a mission and write one scenario as a full sentence: what goes wrong, and who gets hurt?<div class="hint">Then add: does the person at risk get any of the benefit?</div></div></div>
+    <div data-note="1a"></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section data-title="Designing responsibly">
+  <div class="head"><div><span class="n">02 / 03</span><h2>Make the safe outcome the default</h2></div><span class="time">About 10 min</span></div><div class="thread"><div><b>s · What can go wrong?</b>Part 1: spot scenarios</div><div class="now"><b>l, x · How likely, how bad?</b>Part 2: safeguards shrink them</div><div><b>Is it acceptable?</b>Part 3: put it together</div></div>
+  <div class="read">
+    <div class="prose">
+      <p>Designing responsibly mostly comes down to assuming things <span class="mark">will</span> go wrong, then building the aircraft so the safe thing happens anyway, even when someone's tired or rushing a test flight.</p>
+      <p>In Kaplan's terms, a safeguard only does two things. It makes a scenario <span class="mark">less likely</span> (l), or it makes it <span class="mark">less bad</span> when it happens (x). Safety engineers also rank safeguards by how much they rely on people getting it right. Stronger ones are on the left.</p>
+    </div>
+    <div class="side"><div class="aside"><div class="k">Rule of thumb</div><p>If a safeguard only works when someone remembers to do it, it's not a strong safeguard.</p></div></div>
+  </div>
+
+  <div class="wide ladder">
+    <div class="rung"><span class="lv">Strongest</span><span class="t">Get rid of the hazard</span><span class="kt" style="margin:0;align-self:flex-start">lowers x</span><p>Lighter frame, prop guards, smaller props. A crash just can't do much damage.</p><span class="bar"><i style="width:100%"></i></span></div>
+    <div class="rung"><span class="lv">Strong</span><span class="t">Build it in</span><span class="kt" style="margin:0;align-self:flex-start">lowers l and x</span><p>Geofencing, return-to-home, battery failsafes, backup sensors, a parachute.</p><span class="bar"><i style="width:75%"></i></span></div>
+    <div class="rung"><span class="lv">Okay</span><span class="t">Have a procedure</span><span class="kt" style="margin:0;align-self:flex-start">lowers l</span><p>Preflight checklist, a spotter, flight logs, test-range rules.</p><span class="bar"><i style="width:45%"></i></span></div>
+    <div class="rung"><span class="lv">Weakest</span><span class="t">Warn and train</span><span class="kt" style="margin:0;align-self:flex-start">lowers l, a little</span><p>Labels, docs, certifications. Helpful, but only if everyone always does the right thing.</p><span class="bar"><i style="width:20%"></i></span></div>
+  </div>
+
+  <div class="prose" style="max-width:640px"><h3>Where it lives on the aircraft</h3><p>Tap the numbers on the drone to see what each part protects against.</p></div>
+  <div class="wide drone" style="margin-top:16px">
+    <div class="stage">
+      <svg viewBox="0 0 400 400" role="group" aria-label="Top-down quadcopter with numbered safeguards">
+        <g stroke="#2a2d32" stroke-width="14" stroke-linecap="round"><line x1="110" y1="110" x2="290" y2="290"/><line x1="290" y1="110" x2="110" y2="290"/></g>
+        <g fill="rgba(15,17,21,.05)" stroke="rgba(15,17,21,.22)" stroke-dasharray="3 5">
+          <circle cx="100" cy="100" r="62"/><circle cx="300" cy="100" r="62"/><circle cx="100" cy="300" r="62"/><circle cx="300" cy="300" r="62"/></g>
+        <g fill="#2a2d32"><circle cx="100" cy="100" r="13"/><circle cx="300" cy="100" r="13"/><circle cx="100" cy="300" r="13"/><circle cx="300" cy="300" r="13"/></g>
+        <g stroke="#5a5e66" stroke-width="5" stroke-linecap="round"><line x1="58" y1="88" x2="142" y2="112"/><line x1="258" y1="112" x2="342" y2="88"/><line x1="58" y1="312" x2="142" y2="288"/><line x1="258" y1="288" x2="342" y2="312"/></g>
+        <rect x="150" y="140" width="100" height="120" rx="18" fill="#22252a"/>
+        <rect x="168" y="214" width="64" height="32" rx="5" fill="#4a4e56"/>
+        <rect x="180" y="158" width="40" height="40" rx="4" fill="#111214" stroke="#5a5e66"/>
+        <circle cx="200" cy="270" r="12" fill="#111214" stroke="#5a5e66" stroke-width="2"/><circle cx="200" cy="270" r="4" fill="#fdb515"/>
+        <line x1="232" y1="146" x2="262" y2="118" stroke="#22252a" stroke-width="3" stroke-linecap="round"/>
+        <g id="hots"></g>
+      </svg>
+    </div>
+    <div class="info" id="spot" aria-live="polite"></div>
+  </div>
+
+  <div class="read">
+    <div class="prose">
+      <h3 style="margin-top:0">Check your build</h3>
+      <p>Tick off what your current project actually has. Be honest. <span id="tally" class="small"></span></p>
+    </div>
+  </div>
+  <div class="checks" id="checks" style="margin-top:8px"></div>
+
+  <div class="notes">
+    <div class="q"><span class="tag">Your take</span><div class="text">Pick one safeguard you ticked. Which scenario does it protect against, and does it lower l, x, or both?</div></div>
+    <div data-note="2a"></div>
+  </div>
+  <div class="notes">
+    <div class="q"><span class="tag">Your take</span><div class="text">Pick one you didn't tick. What's stopping you from adding it: technical, time, or money?</div></div>
+    <div data-note="2b"></div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section data-title="Risk analysis">
+  <div class="head"><div><span class="n">03 / 03</span><h2>Three questions that make risk concrete</h2></div><span class="time">About 15 min</span></div><div class="thread"><div><b>s · What can go wrong?</b>Part 1: spot scenarios</div><div><b>l, x · How likely, how bad?</b>Part 2: safeguards shrink them</div><div class="now"><b>Is it acceptable?</b>Part 3: put it together</div></div>
+  <div class="read">
+    <div class="prose">
+      <p>Now put the pieces together. In their 1981 paper, Stanley Kaplan and B. John Garrick said risk is the answer to three questions, asked over and over for every scenario you can think of.</p>
+    </div>
+  </div>
+  <div class="wide trip">
+    <div><span class="s">s</span><div class="q">What can go wrong?</div><div class="d">the scenario</div></div>
+    <div><span class="s">l</span><div class="q">How likely is it?</div><div class="d">the likelihood</div></div>
+    <div><span class="s">x</span><div class="q">How bad would it be?</div><div class="d">the consequence</div></div>
+  </div>
+  <div class="read">
+    <div class="prose">
+      <p>Risk is the whole <span class="mark">list</span> of those answers, not one number. A list that's missing a scenario gives you a false sense of safety, so the first job is always making the list complete.</p>
+      <h3>Why not just multiply?</h3>
+      <p>Because multiplying can make two totally different situations look the same.</p>
+    </div>
+  </div>
+  <div class="wide vs" style="margin-top:16px">
+    <div class="c"><span class="small">Scenario A</span><div class="eq">1 × 5 = 5</div><p>Rare. A prop shears off over a crowd and someone gets badly hurt.</p></div>
+    <div class="mid">same score?</div>
+    <div class="c"><span class="small">Scenario B</span><div class="eq">5 × 1 = 5</div><p>Happens all the time. A hard landing scuffs the landing gear.</p></div>
+  </div>
+  <div class="read">
+    <div class="prose">
+      <p>Nobody would treat those the same. Keep the scenarios separate so the rare, nasty ones don't get averaged away.</p>
+      <h3>Worked example: Midair Hotswap</h3>
+      <p>Here's how a risk list might start for the club's mothership battery swap.</p>
+    </div>
+  </div>
+  <div class="worked">
+    <table><thead><tr><th>s · What can go wrong</th><th>l</th><th>x</th><th>Safeguard and what it changes</th></tr></thead><tbody>
+      <tr><td>Battery is released before the latch closes and falls</td><td class="n">3</td><td class="n">4</td><td>Latch sensor must confirm before release. Lowers l to 1</td></tr>
+      <tr><td>The two drones collide during docking</td><td class="n">2</td><td class="n">4</td><td>Test only over the empty field, people stay 30 m back. Lowers x to 2</td></tr>
+      <tr><td>Swap fails and the drone runs out of power</td><td class="n">2</td><td class="n">3</td><td>Abort and land when the pack hits a reserve voltage. Lowers l to 1</td></tr>
+    </tbody></table>
+  </div>
+  <div class="read" style="margin-top:32px">
+    <div class="prose">
+      <h3>Is it acceptable?</h3>
+      <p>Kaplan's questions tell you what the risks are. They don't tell you whether a risk is okay. That's the ethics part. For each scenario that's left, ask:</p>
+    </div>
+  </div>
+  <div class="accept">
+    <div><b>Consent</b><span>Did the people at risk agree to it? Club members at a test range did. People walking past did not.</span></div>
+    <div><b>Fairness</b><span>Do the people taking the risk get any of the benefit?</span></div>
+    <div><b>Cost to fix</b><span>Could you cut it down without much effort? If yes, “acceptable” isn't a good excuse.</span></div>
+  </div>
+  <div class="read" style="margin-top:32px">
+    <div class="prose">
+      <h3>Your risk list</h3>
+      <p>Now do it for a project you work on. Aim for at least three scenarios, including one that isn't a crash. Rate each 1 to 5. They'll show up on the grid.</p>
+    </div>
+  </div>
+  <div class="reg" style="margin-top:8px">
+    <table><thead><tr><th></th><th>What could go wrong</th><th style="width:120px">Likelihood</th><th style="width:120px">How bad</th><th class="sc">Score</th><th style="width:40px"></th></tr></thead><tbody id="reg"></tbody></table>
+    <button class="addrow" id="addRisk">+ Add another</button>
+  </div>
+  <div class="mx">
+    <div class="matrix" id="matrix" aria-label="Risk grid"></div>
+    <div class="prose" style="font-size:17px">
+      <p><strong style="font-family:var(--sans)">Reading the grid.</strong> Up and to the right means fix it before the next flight. Down and to the left you can probably live with if you keep an eye on it. Anything in the top row deserves a second look no matter how unlikely it is.</p>
+      <p class="small" style="font-family:var(--sans)">Up: how bad · Across: how likely</p>
+    </div>
+  </div>
+
+  <div class="prose" style="max-width:640px;margin-top:48px"><h3>Quick check</h3><p>Not graded. Pick an answer to see why.</p></div>
+  <div class="qc" id="qc"></div>
+  <div class="notes">
+    <div class="q"><span class="tag">Your take</span><div class="text">Pick your highest-scoring scenario. What safeguard would you add, and would it lower l or x?</div></div>
+    <div data-note="3a"></div>
+  </div>
+  <div class="notes">
+    <div class="q"><span class="tag">Your take</span><div class="text">Pick one scenario you'd call acceptable. Defend it using consent, fairness, and cost to fix.</div></div>
+    <div data-note="3b"></div>
+  </div>
+</section>
+
+<!-- WRAP -->
+<section data-title="Wrap up">
+  <div class="head"><div><span class="n">Almost done</span><h2>Before you land</h2></div></div>
+  <div class="notes">
+    <div class="q"><span class="tag">Look back</span><div class="text">At the start you said how your drone could hurt someone. Would you answer differently now?<div class="hint" id="preEcho"></div></div></div>
+    <div data-note="post"></div>
+  </div>
+  <div class="notes">
+    <div class="q"><span class="tag">Bring it</span><div class="text">One question to bring to the discussion</div></div>
+    <div data-note="disc"></div>
+  </div>
+  <div style="text-align:right"><button class="btn dark" id="finishBtn">Finish</button></div>
+</section>
+
+<!-- END -->
+<section data-title="Landed">
+  <div class="end">
+    <div>
+      <span class="small" style="color:var(--sky-ink);opacity:.7">Module complete</span>
+      <h2 id="endTitle">Nice flying</h2>
+      <p>You read the whole thing and wrote it down. Save your notes before you close this, then bring your question to the discussion.</p>
+      <div class="endrow">
+        <button class="btn dark" id="endSave">Save to file</button>
+        <button class="btn light" id="endCopy">Copy notes</button>
+      </div>
+    </div>
+    <div class="seal" aria-hidden="true"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Safe landing</div></div>
+  </div>
+  <div class="stats">
+    <div><span class="l">Questions answered</span><div class="v" id="sAns">0</div><span class="s" id="sAnsS"></span></div>
+    <div><span class="l">Safeguards on your build</span><div class="v" id="sChk">0</div><span class="s">out of 10 on the checklist</span></div>
+    <div><span class="l">Your top risk</span><div class="v" id="sTop">–</div><span class="s" id="sTopS">Add scenarios in part 3 to see it here</span></div>
+  </div>
+  <div class="prose" style="max-width:640px"><h3>Everything you wrote</h3></div>
+  <div class="log" id="log"></div>
+  <p class="foot">Reference: S. Kaplan and B. J. Garrick, “On the Quantitative Definition of Risk,” Risk Analysis 1(1), 1981. FAA drone rules: faa.gov/uas. UAVs@Berkeley · McLaughlin 107A · uav.studentorg.berkeley.edu</p>
+</section>
+</main>
+
+<div class="dock">
+  <span class="stat" id="stat">0 answered</span>
+  <span class="sep"></span>
+  <button id="saveBtn" title="Download a file with all your notes">Save to file</button>
+  <button id="loadBtn" title="Open a notes file you saved earlier">Open file</button>
+  <button id="copyBtn">Copy</button>
+  <button class="dark" id="nextBtn">Next</button>
+  <input type="file" id="fileIn" accept=".json,application/json" hidden>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const KEY='uav-drone-ethics-notes-v5';
+const QS={pre:'Warm-up: how could my drone hurt someone?','1a':'One scenario: what goes wrong and who gets hurt?','2a':'A safeguard I have: which scenario, and does it lower l, x or both?','2b':'A safeguard I don\'t have: what\'s stopping me?','3a':'My top scenario: what would I add, and does it lower l or x?','3b':'A scenario I\'d call acceptable, and why',post:'Would I answer the warm-up differently now?',disc:'Question for the discussion'};
+const CHECKS=['Prop guards or a light frame','Geofence or altitude cap','Return-to-home on signal loss','Low-battery failsafe','Kill switch we’ve actually tested','Preflight checklist','Spotter and test-range rules','Flight logs','Rules for camera footage','Tested what happens when parts fail'];
+const blank=()=>({name:'',ans:{},risks:[{s:'',l:'',x:''}],checks:{},qc:{},page:0});
+let S=blank();
+try{S=Object.assign(blank(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const answered=()=>Object.keys(QS).filter(k=>String(S.ans[k]||'').trim()).length;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};stat();}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),2200);}
+
+/* navigation */
+const secs=$$('section');
+secs.forEach((s,i)=>{const b=document.createElement('button');b.className='pill';b.innerHTML=`${s.dataset.title}<span class="ck"></span>`;b.onclick=()=>go(i);$('#pills').appendChild(b);});
+function go(i){const cur=Math.max(0,Math.min(i,secs.length-1));S.page=cur;save();
+  secs.forEach((s,j)=>s.classList.toggle('on',j===cur));
+  $$('.pill').forEach((b,j)=>b.setAttribute('aria-current',j===cur));
+  const last=cur===secs.length-1;
+  $('#nextBtn').textContent=cur===0?'Start':last?'Back to start':'Next';
+  $('#nextTop').style.visibility=last?'hidden':'visible';
+  if(cur===secs.length-2){const p=String(S.ans.pre||'').trim();$('#preEcho').textContent=p?`You said: “${p}”`:'';}
+  if(last)renderEnd();
+  window.scrollTo({top:0});}
+$('#nextBtn').onclick=()=>go(S.page===secs.length-1?0:S.page+1);
+$('#nextTop').onclick=()=>go(S.page+1);
+$('#startBtn').onclick=()=>go(1);
+$('#finishBtn').onclick=()=>go(secs.length-1);
+
+/* name */
+const nameIn=$('#name');
+nameIn.oninput=()=>{S.name=nameIn.value;save();};
+nameIn.onkeydown=e=>{if(e.key==='Enter')go(1);};
+
+/* notes */
+function renderNotes(){
+  $$('[data-note]').forEach(box=>{const id=box.dataset.note;
+    box.innerHTML=`<div class="pbox"><textarea data-id="${id}" placeholder="Write what you think…" aria-label="${esc(QS[id])}">${esc(S.ans[id]||'')}</textarea></div>`;});
+  $$('[data-id]').forEach(t=>t.oninput=()=>{S.ans[t.dataset.id]=t.value;save();});}
+function stat(){
+  $('#stat').textContent=`${answered()} of ${Object.keys(QS).length} answered · saved on this computer`;
+  secs.forEach((s,i)=>{const ids=[...s.querySelectorAll('[data-note]')].map(g=>g.dataset.note);
+    const done=ids.length>0&&ids.every(id=>String(S.ans[id]||'').trim());
+    const ck=$$('.pill .ck')[i];if(ck)ck.classList.toggle('on',done);});}
+
+/* missions */
+const IC={sar:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="5"/>',ag:'<path d="M12 21V9M12 9c0-3 2-5 6-6 0 4-2 6-6 6zM12 13c0-3-2-5-6-6 0 4 2 6 6 6z"/>',del:'<path d="M4 8l8-4 8 4-8 4-8-4zM4 8v8l8 4 8-4V8M12 12v8"/>',insp:'<path d="M4 20h16M7 20V8l5-4 5 4v12M10 20v-5h4v5"/>',cam:'<rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l2-3h4l2 3"/>',sec:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/>'};
+const APPS=[
+ {t:'Search and rescue',c:'disasters',i:'sar',b:['Covers dangerous ground fast','Thermal cameras spot people at night','Keeps rescuers out of harm’s way'],r:['Filming people at their worst moment','Getting in the way of rescue helicopters','Teams trusting the auto-detection too much'],d:2},
+ {t:'Farming',c:'environment',i:'ag',b:['Sprays only where it’s needed','Catches sick crops early','Counts wildlife without trampling habitat'],r:['Spray drifting onto the neighbors','Spooking nesting animals','Who owns the field data, the farmer or the vendor?'],d:2},
+ {t:'Delivery',c:'logistics',i:'del',b:['Medicine to remote clinics','Fewer vans on short trips'],r:['Crashes over streets and people','Constant buzzing over neighborhoods','People under the route take the risk, customers get the perks'],d:3},
+ {t:'Inspection',c:'bridges, towers',i:'insp',b:['Workers stay off sketchy heights','Spots cracks before they turn into failures'],r:['Inspection jobs disappearing','Detailed maps of sensitive sites'],d:2},
+ {t:'Photo and video',c:'hobby, film',i:'cam',b:['Aerial shots for almost anyone','Cheap surveys for small projects'],r:['Filming into backyards and windows','Flying near airports and stadiums'],d:3},
+ {t:'Police and military',c:'security',i:'sec',b:['Eyes on a scene without risking officers','Faster emergency response'],r:['Watching the public at scale','Making it easier to use force','Machines in life-or-death calls, and nobody clearly accountable'],d:5}];
+APPS.forEach((a,k)=>{const b=document.createElement('button');b.className='tile';b.setAttribute('aria-pressed','false');
+  b.innerHTML=`<div class="art"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${IC[a.i]}</svg></div><div class="meta"><span class="t">${a.t}</span><span class="c">${a.c}</span></div>`;
+  b.onclick=()=>app(k);$('#apps').appendChild(b);});
+function app(k){const a=APPS[k];$$('.tile').forEach((b,j)=>b.setAttribute('aria-pressed',j===k));
+  $('#appDetail').innerHTML=`<div><h4>Who benefits</h4><ul>${a.b.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h4>What can go wrong <span class="kt">scenarios</span></h4><ul>${a.r.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+  <div class="harm"><h4>How badly it could hurt people</h4><div><div class="big">${a.d}<small> / 5</small></div><div class="dots">${[1,2,3,4,5].map(n=>`<i class="${n<=a.d?'f':''}"></i>`).join('')}</div></div></div>`;}
+app(0);
+
+/* drone hotspots */
+const HOTS=[
+ {x:100,y:100,t:'Prop guards',tier:'Get rid of the hazard · lowers x',p:'Spinning props cause most drone injuries. Guards, smaller props or a lighter frame mean a crash leaves a bruise instead of a trip to the ER.'},
+ {x:200,y:178,t:'Flight controller',tier:'Build it in · lowers l',p:'Geofences and altitude caps keep the drone away from airports and crowds even when the pilot forgets. Return-to-home decides what happens when nobody’s flying, so make sure the way home doesn’t cross a crowd.'},
+ {x:200,y:230,t:'Battery',tier:'Build it in · lowers l and x',p:'A low-voltage failsafe brings the drone down gently before it just drops. Damaged LiPos can also catch fire, so how you store and charge them belongs on the checklist.'},
+ {x:200,y:270,t:'Camera',tier:'Privacy · lowers l',p:'This is where drones affect people who never even see them. Point it only where the mission needs, avoid recording bystanders, and agree on how long footage is kept and who can see it.'},
+ {x:262,y:118,t:'Radio link',tier:'Build it in + procedure · lowers x',p:'A kill switch you’ve actually tested, plus a plan for losing signal, is your last bit of control. Encrypting the link stops someone else from hijacking it or reading your telemetry.'}];
+const NS='http://www.w3.org/2000/svg';let spotI=0;
+HOTS.forEach((h,k)=>{const g=document.createElementNS(NS,'g');g.setAttribute('class','hot');g.setAttribute('tabindex','0');g.setAttribute('role','button');g.setAttribute('aria-label',h.t);
+  g.innerHTML=`<circle cx="${h.x}" cy="${h.y}" r="14"/><text x="${h.x}" y="${h.y+4}" text-anchor="middle">${k+1}</text>`;
+  g.addEventListener('click',()=>spot(k));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();spot(k);}});$('#hots').appendChild(g);});
+function spot(k){spotI=(k+HOTS.length)%HOTS.length;const h=HOTS[spotI];$$('.hot').forEach((g,j)=>g.classList.toggle('on',j===spotI));
+  $('#spot').innerHTML=`<span class="n">${spotI+1} of ${HOTS.length}</span><h4>${h.t}</h4><span class="tier">${h.tier}</span><p>${h.p}</p>
+  <div class="nav"><button aria-label="Previous">←</button><button aria-label="Next">→</button></div>`;
+  const [p,n]=$$('#spot .nav button');p.onclick=()=>spot(spotI-1);n.onclick=()=>spot(spotI+1);}
+spot(0);
+
+/* checklist */
+function renderChecks(){$('#checks').innerHTML='';
+  CHECKS.forEach((c,k)=>{const l=document.createElement('label');l.className='check';
+    l.innerHTML=`<input type="checkbox" ${S.checks[k]?'checked':''}><span>${c}</span>`;
+    l.querySelector('input').onchange=e=>{S.checks[k]=e.target.checked;save();tally();};$('#checks').appendChild(l);});tally();}
+const nChecks=()=>CHECKS.filter((_,k)=>S.checks[k]).length;
+function tally(){$('#tally').textContent=`(${nChecks()} of ${CHECKS.length})`;}
+
+/* risk list */
+const opt=v=>'<option value="">–</option>'+[1,2,3,4,5].map(n=>`<option ${+v===n?'selected':''}>${n}</option>`).join('');
+const band=s=>s>=15?'hi':s>=6?'md':s?'lo':'';
+function renderReg(){const tb=$('#reg');tb.innerHTML='';
+  S.risks.forEach((r,k)=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="i">${k+1}</td><td><input data-k="s" value="${esc(r.s)}" placeholder="${k===0?'e.g. battery drops during a midair swap':''}" aria-label="Scenario ${k+1}"></td><td><select data-k="l" aria-label="Likelihood">${opt(r.l)}</select></td><td><select data-k="x" aria-label="How bad">${opt(r.x)}</select></td><td class="sc"></td><td><button class="x" aria-label="Remove">✕</button></td>`;
+    const paint=()=>{const s=(+r.l||0)*(+r.x||0),c=tr.querySelector('.sc');c.textContent=s||'';c.className='sc '+band(s);};
+    tr.querySelectorAll('[data-k]').forEach(el=>{const h=()=>{r[el.dataset.k]=el.value;paint();save();matrix();};el.addEventListener('input',h);el.addEventListener('change',h);});
+    tr.querySelector('.x').onclick=()=>{S.risks.splice(k,1);if(!S.risks.length)S.risks.push({s:'',l:'',x:''});save();renderReg();};
+    paint();tb.appendChild(tr);});matrix();}
+$('#addRisk').onclick=()=>{S.risks.push({s:'',l:'',x:''});save();renderReg();$$('#reg input').at(-1).focus();};
+function matrix(){const m=$('#matrix');m.innerHTML='';
+  for(let x=5;x>=1;x--){m.insertAdjacentHTML('beforeend',`<div class="ax">${x}</div>`);
+    for(let l=1;l<=5;l++){const s=x*l,c=document.createElement('div');c.className='cell';
+      c.style.background=s>=15?'rgba(168,66,58,.14)':s>=6?'rgba(200,140,30,.14)':'rgba(47,125,74,.10)';
+      S.risks.forEach((r,k)=>{if(+r.l===l&&+r.x===x)c.insertAdjacentHTML('beforeend',`<span class="pin" title="${esc(r.s)}">${k+1}</span>`);});m.appendChild(c);}}
+  m.insertAdjacentHTML('beforeend','<div></div>'+[1,2,3,4,5].map(n=>`<div class="ax">${n}</div>`).join(''));}
+const sortedRisks=()=>S.risks.filter(r=>r.s.trim()).sort((a,b)=>((+b.l||0)*(+b.x||0))-((+a.l||0)*(+a.x||0)));
+
+/* quick check */
+const QC=[
+ {p:'Adding prop guards to a drone mainly lowers…',o:['Likelihood (l)','Consequence (x)','Neither'],a:1,w:'Guards don\u2019t stop a crash from happening. They make it hurt less when it does.'},
+ {p:'Two scenarios both score 5. One is 1 × 5, the other is 5 × 1. Kaplan would say…',o:['They\u2019re equally risky','Keep them separate, they need different responses','Drop the lower one'],a:1,w:'That\u2019s why risk is a list of triplets, not one number. The rare, severe one needs its own plan.'},
+ {p:'Your risk list has no privacy scenarios. What\u2019s the problem?',o:['None, privacy isn\u2019t a safety risk','The list is incomplete, so the analysis looks safer than it is','It only matters if it\u2019s illegal'],a:1,w:'A missing scenario is invisible risk. The first question is always: what else can go wrong?'}];
+S.qc ??= {};
+function renderQC(){$('#qc').innerHTML='';
+  QC.forEach((q,i)=>{const d=document.createElement('div');d.className='qi';
+    d.innerHTML=`<div class="p">${i+1}. ${q.p}</div><div class="opts">${q.o.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb"></div>`;
+    const show=j=>{d.querySelectorAll('button').forEach((b,k)=>{b.className=k===q.a?'right':(k===j?'wrong':'');});
+      d.querySelector('.fb').textContent=(j===q.a?'Right. ':'Not quite. ')+q.w;};
+    d.querySelectorAll('button').forEach(b=>b.onclick=()=>{const j=+b.dataset.j;S.qc[i]=j;save();show(j);});
+    if(S.qc[i]!=null)show(S.qc[i]);$('#qc').appendChild(d);});}
+
+/* ending */
+function renderEnd(){const n=answered(),tot=Object.keys(QS).length;
+  $('#endTitle').textContent=S.name.trim()?`Nice flying, ${S.name.trim().split(' ')[0]}`:'Nice flying';
+  $('#sAns').textContent=n;$('#sAnsS').textContent=n===tot?'All of them':`out of ${tot}. You can go back and fill the rest in`;
+  $('#sChk').textContent=nChecks();
+  const top=sortedRisks()[0];
+  if(top){const sc=(+top.l||0)*(+top.x||0);$('#sTop').textContent=sc||'–';$('#sTopS').textContent=top.s;}
+  else{$('#sTop').textContent='–';$('#sTopS').textContent='Add scenarios in part 3 to see it here';}
+  $('#log').textContent=logText();}
+
+/* export */
+function logText(){const L=['Drone Ethics · UAVs@Berkeley','Name: '+(S.name.trim()||'—'),'Date: '+new Date().toLocaleDateString(),''];
+  Object.entries(QS).forEach(([id,q])=>L.push(q,'  '+(String(S.ans[id]||'').trim()||'—'),''));
+  L.push('Quick check: '+QC.filter((q,i)=>S.qc&&S.qc[i]===q.a).length+' of '+QC.length+' right','');
+  L.push('Safeguards my project has: '+(CHECKS.filter((_,k)=>S.checks[k]).join('; ')||'none ticked'),'','Risk list:');
+  const rs=sortedRisks();
+  rs.length?rs.forEach(r=>L.push(`  - ${r.s} (likelihood ${r.l||'?'}, how bad ${r.x||'?'}, score ${((+r.l||0)*(+r.x||0))||'?'})`)):L.push('  —');
+  return L.join('\n');}
+async function copyNotes(){try{await navigator.clipboard.writeText(logText());toast('Copied to clipboard');}
+  catch(e){go(secs.length-1);const r=document.createRange();r.selectNodeContents($('#log'));getSelection().removeAllRanges();getSelection().addRange(r);toast('Selected. Press Ctrl+C to copy');}}
+function saveFile(){const nm=(S.name.trim()||'my').replace(/[^\w-]+/g,'-').toLowerCase();
+  const blob=new Blob([JSON.stringify({app:'uav-drone-ethics',saved:new Date().toISOString(),data:S,text:logText()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`drone-ethics-notes-${nm}.json`;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Saved to your Downloads folder');}
+$('#copyBtn').onclick=copyNotes;$('#endCopy').onclick=copyNotes;
+$('#saveBtn').onclick=saveFile;$('#endSave').onclick=saveFile;
+$('#loadBtn').onclick=()=>$('#fileIn').click();
+$('#fileIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const j=JSON.parse(rd.result);if(!j||!j.data)throw 0;const d=j.data;
+      if(d.names&&!d.name)d.name=d.names.filter(Boolean).join(', ');
+      for(const k in (d.ans||{}))if(d.ans[k]&&typeof d.ans[k]==='object')d.ans[k]=Object.values(d.ans[k]).filter(Boolean).join('\n');
+      S=Object.assign(blank(),d);save();boot();toast('Notes loaded');}
+    catch(_){toast('That file doesn’t look like saved notes');}};
+  rd.readAsText(f);e.target.value='';};
+
+function boot(){nameIn.value=S.name||'';S.qc ??= {};renderQC();renderNotes();renderChecks();renderReg();stat();go(+S.page||0);}
+boot();
+</script>
+</body>
+</html>
